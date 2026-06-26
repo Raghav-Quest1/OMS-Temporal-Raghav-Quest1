@@ -1,0 +1,1553 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-accent="blue" data-density="comfortable">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OMS Console — Order Management</title>
+<style>
+  /* ════════════════════════════════════════════════════════════════════════
+     OMS CONSOLE — design system v2
+     A premium dashboard look: layered glass surfaces, an animated aurora
+     background, spring easings, and staggered entrance motion. All class
+     names are preserved so the app logic is untouched.
+     ════════════════════════════════════════════════════════════════════════ */
+  :root {
+    --bg:        #0a0c12;
+    --bg-2:      #0f131c;
+    --bg-accent: #2742a8;
+    --bg-accent2:#7c3aed;
+    --surface:   rgba(22, 27, 38, .72);
+    --surface-solid: #161b26;
+    --surface2:  rgba(30, 36, 50, .6);
+    --surface3:  #232a39;
+    --border:    rgba(255, 255, 255, .08);
+    --border2:   rgba(255, 255, 255, .16);
+    --text:      #eef2f8;
+    --text2:     #c4ccda;
+    --muted:     #8b94a7;
+    --faint:     #5d6577;
+
+    --blue:   #5b9dff;
+    --purple: #b07bff;
+    --green:  #3ad17f;
+    --teal:   #2ed4d4;
+    --yellow: #f5c451;
+    --orange: #ff8a4c;
+    --pink:   #ff6bb3;
+    --red:    #ff6470;
+
+    --accent:      var(--blue);
+    --accent-2:    color-mix(in srgb, var(--accent) 55%, var(--purple));
+    --accent-soft: color-mix(in srgb, var(--accent) 18%, transparent);
+    --accent-text: #06122b;
+
+    --shadow:    0 24px 60px -18px rgba(0,0,0,.7);
+    --shadow-md: 0 14px 36px -14px rgba(0,0,0,.6);
+    --shadow-sm: 0 4px 16px -6px rgba(0,0,0,.5);
+    --glow:      0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent), 0 12px 30px -10px color-mix(in srgb, var(--accent) 55%, transparent);
+
+    --radius:   16px;
+    --radius-sm:11px;
+    --radius-lg:24px;
+
+    --font: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    --mono: 'Cascadia Code', 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+    --ease: cubic-bezier(.4,0,.2,1);
+    --ease-out: cubic-bezier(.16,1,.3,1);
+    --spring: cubic-bezier(.34,1.56,.64,1);
+
+    --pad:   18px;
+    --pad-lg:30px;
+    --gap:   18px;
+    --row-h: 46px;
+  }
+
+  :root[data-theme="light"] {
+    --bg:        #eef1f7;
+    --bg-2:      #e6eaf3;
+    --bg-accent: #b9ccff;
+    --bg-accent2:#e3c9ff;
+    --surface:   rgba(255, 255, 255, .82);
+    --surface-solid: #ffffff;
+    --surface2:  rgba(244, 247, 252, .8);
+    --surface3:  #e7ecf3;
+    --border:    rgba(15, 23, 42, .1);
+    --border2:   rgba(15, 23, 42, .18);
+    --text:      #131722;
+    --text2:     #303849;
+    --muted:     #5a6577;
+    --faint:     #8b94a6;
+
+    --blue:   #2563eb;
+    --purple: #7c3aed;
+    --green:  #15883e;
+    --teal:   #0d9aa0;
+    --yellow: #b07900;
+    --orange: #c2410c;
+    --pink:   #be2d7f;
+    --red:    #dc2740;
+
+    --accent-text: #ffffff;
+    --shadow:    0 24px 60px -22px rgba(40,60,120,.4);
+    --shadow-md: 0 14px 34px -16px rgba(40,60,120,.32);
+    --shadow-sm: 0 4px 14px -6px rgba(40,60,120,.28);
+  }
+
+  :root[data-accent="blue"]   { --accent: var(--blue); }
+  :root[data-accent="purple"] { --accent: var(--purple); }
+  :root[data-accent="green"]  { --accent: var(--green);  --accent-text:#04130a; }
+  :root[data-accent="teal"]   { --accent: var(--teal);   --accent-text:#04130a; }
+  :root[data-accent="orange"] { --accent: var(--orange); --accent-text:#1a0a02; }
+  :root[data-accent="pink"]   { --accent: var(--pink);   --accent-text:#1a0411; }
+  :root[data-theme="light"][data-accent="green"],
+  :root[data-theme="light"][data-accent="teal"],
+  :root[data-theme="light"][data-accent="orange"],
+  :root[data-theme="light"][data-accent="pink"] { --accent-text:#ffffff; }
+
+  :root[data-density="compact"]  { --pad: 12px; --pad-lg: 20px; --gap: 12px; --row-h: 36px; }
+  :root[data-density="spacious"] { --pad: 24px; --pad-lg: 40px; --gap: 24px; --row-h: 54px; }
+
+  /* ── Base ── */
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: var(--font); font-size: 14px; line-height: 1.55;
+    overflow: hidden; letter-spacing: .1px;
+    -webkit-font-smoothing: antialiased;
+    transition: background-color .5s var(--ease), color .5s var(--ease);
+  }
+  h1,h2,h3,h4 { font-weight: 650; line-height: 1.2; letter-spacing: -.2px; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  button { font-family: inherit; }
+  code, .mono { font-family: var(--mono); }
+  code {
+    background: color-mix(in srgb, var(--purple) 18%, transparent);
+    color: var(--purple); padding: 1px 6px; border-radius: 6px; font-size: .88em;
+  }
+  ::selection { background: color-mix(in srgb, var(--accent) 45%, transparent); color: #fff; }
+  /* ── Inline SVG icons ── */
+  svg.ic { width: 16px; height: 16px; display: inline-block; vertical-align: -.18em; flex: none; stroke-width: 2; }
+  .icon-btn svg.ic { width: 18px; height: 18px; }
+  .btn svg.ic { width: 15px; height: 15px; vertical-align: middle; }
+  .btn-xs svg.ic { width: 14px; height: 14px; }
+  .ni-icon svg.ic { width: 17px; height: 17px; vertical-align: middle; }
+  .m-icon svg.ic { width: 18px; height: 18px; }
+  .brand-logo svg.ic { width: 20px; height: 20px; }
+  .vt-icon svg.ic { width: 16px; height: 16px; vertical-align: -.2em; }
+  .e-icon svg.ic { width: 48px; height: 48px; }
+  .sort-ind svg.ic { width: 11px; height: 11px; vertical-align: middle; }
+  .toast-title svg.ic { width: 15px; height: 15px; }
+  .search-box svg.ic { width: 15px; height: 15px; }
+  .drawer-head svg.ic { width: 18px; height: 18px; }
+  ::-webkit-scrollbar { width: 11px; height: 11px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 8px; border: 3px solid transparent; background-clip: content-box; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--faint); background-clip: content-box; }
+
+  /* ── Animated aurora background ── */
+  body::before, body::after {
+    content: ''; position: fixed; z-index: 0; pointer-events: none; border-radius: 50%;
+    filter: blur(70px); opacity: .5;
+  }
+  body::before {
+    top: -240px; right: -160px; width: 620px; height: 620px;
+    background: radial-gradient(circle, var(--bg-accent), transparent 68%);
+    animation: drift1 22s ease-in-out infinite;
+  }
+  body::after {
+    bottom: -280px; left: -140px; width: 560px; height: 560px;
+    background: radial-gradient(circle, var(--bg-accent2), transparent 68%);
+    animation: drift2 26s ease-in-out infinite;
+  }
+  @keyframes drift1 { 0%,100%{ transform: translate(0,0) scale(1);} 50%{ transform: translate(-60px,80px) scale(1.2);} }
+  @keyframes drift2 { 0%,100%{ transform: translate(0,0) scale(1);} 50%{ transform: translate(70px,-60px) scale(1.15);} }
+
+  /* ── App layout ── */
+  .app {
+    display: flex; flex-direction: column;
+    height: 100vh; position: relative; z-index: 1;
+  }
+  .mobile-only { display: none; }
+
+  /* ── Top bar ── */
+  .topbar {
+    display: flex; align-items: center; gap: 16px; flex-shrink: 0;
+    height: 64px; padding: 0 22px; border-bottom: 1px solid var(--border);
+    position: relative; z-index: 6;
+    background: var(--surface); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+  }
+  .brand { display: flex; align-items: center; gap: 11px; flex-shrink: 0; }
+  .brand-logo {
+    width: 34px; height: 34px; border-radius: 11px; flex-shrink: 0;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    display: grid; place-items: center; color: #fff; font-weight: 800; font-size: 17px;
+    box-shadow: var(--glow); animation: logoPulse 4s var(--ease) infinite;
+  }
+  @keyframes logoPulse { 0%,100%{ box-shadow: 0 0 0 1px color-mix(in srgb,var(--accent) 40%,transparent), 0 10px 26px -10px color-mix(in srgb,var(--accent) 55%,transparent);} 50%{ box-shadow: 0 0 0 1px color-mix(in srgb,var(--accent) 60%,transparent), 0 16px 40px -10px color-mix(in srgb,var(--accent) 75%,transparent);} }
+  .brand-name { font-size: 15px; font-weight: 750; white-space: nowrap; overflow: hidden; letter-spacing: -.2px; }
+  .brand-name small { display: block; font-size: 9px; font-weight: 600; color: var(--muted); letter-spacing: 1.4px; }
+
+  /* ── Header bits ── */
+  .view-title { font-size: 17px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+  .view-title .vt-icon { font-size: 19px; }
+  .header-spacer { flex: 1; }
+
+  .search-box {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--surface2); border: 1px solid var(--border); border-radius: 999px;
+    padding: 7px 14px; width: 240px;
+    transition: border-color .25s, box-shadow .25s, width .35s var(--spring), background .25s;
+  }
+  .search-box:focus-within { border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); width: 300px; }
+  .search-box input { background: none; border: none; outline: none; color: var(--text); font-size: 13px; flex: 1; min-width: 0; }
+  .search-box .kbd { font-size: 10px; }
+
+  .icon-btn {
+    width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center;
+    background: var(--surface2); border: 1px solid var(--border); cursor: pointer;
+    font-size: 16px; color: var(--text); position: relative;
+    transition: transform .3s var(--spring), border-color .2s, background .2s, color .2s, box-shadow .2s;
+  }
+  .icon-btn:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+  .icon-btn:active { transform: translateY(0) scale(.9); }
+  #themeToggle:hover { transform: rotate(40deg) scale(1.08); }
+  #themeToggle:active { transform: rotate(180deg) scale(.88); }
+
+  /* ── Horizontal nav tabs ── */
+  .nav { display: flex; align-items: center; gap: 5px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 8px; padding: 9px 16px; border-radius: 999px;
+    cursor: pointer; color: var(--muted); font-size: 13.5px; font-weight: 600; white-space: nowrap;
+    border: 1px solid transparent; position: relative;
+    transition: background .25s var(--ease), color .2s, transform .2s var(--spring), box-shadow .25s;
+  }
+  .nav-item .ni-icon { font-size: 16px; transition: transform .3s var(--spring); }
+  .nav-item:hover { background: var(--surface2); color: var(--text); transform: translateY(-1px); }
+  .nav-item:hover .ni-icon { transform: scale(1.15); }
+  .nav-item.active {
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    color: var(--accent-text); border-color: transparent;
+    box-shadow: 0 8px 20px -8px color-mix(in srgb, var(--accent) 75%, transparent);
+    animation: tabIn .4s var(--spring);
+  }
+  @keyframes tabIn { from { transform: scale(.9); } to { transform: scale(1); } }
+  .nav-item .ni-count { font-size: 11px; font-weight: 700; background: color-mix(in srgb, var(--text) 12%, transparent); color: inherit; padding: 1px 8px; border-radius: 999px; min-width: 20px; text-align: center; }
+  .nav-item.active .ni-count { background: rgba(255,255,255,.28); }
+
+  /* ── Main ── */
+  .main { flex: 1; overflow-y: auto; position: relative; z-index: 1; padding: var(--pad-lg); display: flex; justify-content: center; scroll-behavior: smooth; }
+  .view { display: none; width: 100%; max-width: 1320px; }
+  .view.active { display: block; animation: viewIn .5s var(--ease-out); }
+  .view-head { margin-bottom: var(--gap); }
+  .view-head h2 { font-size: 23px; background: linear-gradient(120deg, var(--text), var(--muted)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+  .view-head p { color: var(--muted); font-size: 13px; margin-top: 4px; max-width: 720px; }
+
+  /* staggered entrance for primary blocks (replays only when content changes) */
+  .view.active .metric, .view.active .card { animation: cardIn .55s var(--ease-out) backwards; }
+  .view.active .metric:nth-child(1){animation-delay:.03s}
+  .view.active .metric:nth-child(2){animation-delay:.08s}
+  .view.active .metric:nth-child(3){animation-delay:.13s}
+  .view.active .metric:nth-child(4){animation-delay:.18s}
+  .view.active .metric:nth-child(5){animation-delay:.23s}
+  .view.active .metric:nth-child(6){animation-delay:.28s}
+  .view.active .card:nth-of-type(2){animation-delay:.1s}
+  .view.active .card:nth-of-type(3){animation-delay:.16s}
+  .view.active .card:nth-of-type(4){animation-delay:.22s}
+
+  /* ── Context / status strip ── */
+  .substatus {
+    display: flex; align-items: center; gap: 14px; flex-shrink: 0;
+    height: 40px; padding: 0 24px; font-size: 11px; color: var(--muted);
+    border-bottom: 1px solid var(--border); position: relative; z-index: 5;
+    background: color-mix(in srgb, var(--surface-solid) 60%, transparent);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  }
+  .substatus .view-title { font-size: 13px; font-weight: 700; color: var(--text); }
+  .substatus .view-title .vt-icon { font-size: 15px; }
+  .sb-item { display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+  .sb-sep { width: 1px; height: 13px; background: var(--border); }
+  .conn-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--faint); flex-shrink: 0; }
+  .conn-dot.online { background: var(--green); box-shadow: 0 0 0 0 var(--green); animation: ring 2s ease-out infinite; }
+  .conn-dot.offline { background: var(--red); }
+  .conn-dot.checking { background: var(--yellow); animation: pulse .8s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    box-shadow: var(--shadow-sm); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    position: relative; overflow: hidden;
+    transition: transform .3s var(--ease-out), border-color .3s, box-shadow .3s, background .5s var(--ease);
+  }
+  .card::after { content:''; position:absolute; inset:0 0 auto 0; height:1px; background: linear-gradient(90deg, transparent, var(--border2), transparent); opacity:.6; }
+  .card:hover { transform: translateY(-3px); border-color: var(--border2); box-shadow: var(--shadow-md); }
+  .card-head { padding: 15px var(--pad); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .card-head h3 { font-size: 13px; font-weight: 700; letter-spacing: .2px; }
+  .card-head .ch-sub { font-size: 11px; color: var(--muted); font-weight: 400; }
+  .card-body { padding: var(--pad); }
+
+  .grid { display: grid; gap: var(--gap); }
+  .grid-2 { grid-template-columns: repeat(2, 1fr); }
+  .grid-3 { grid-template-columns: repeat(3, 1fr); }
+  .grid-4 { grid-template-columns: repeat(4, 1fr); }
+  .grid-auto { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); }
+  @media (max-width: 1200px) { .grid-4 { grid-template-columns: repeat(2,1fr); } .grid-3 { grid-template-columns: repeat(2,1fr); } }
+  @media (max-width: 760px)  { .grid-2,.grid-3,.grid-4 { grid-template-columns: 1fr; } }
+
+  /* ── Metric tiles ── */
+  .metric {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: var(--pad); position: relative; overflow: hidden; box-shadow: var(--shadow-sm);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    transition: transform .3s var(--ease-out), border-color .3s, box-shadow .3s, background .5s var(--ease);
+  }
+  .metric::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background: linear-gradient(90deg, var(--accent), var(--accent-2)); opacity:0; transition: opacity .3s; }
+  .metric:hover { transform: translateY(-4px); border-color: var(--border2); box-shadow: var(--shadow-md); }
+  .metric:hover::before { opacity: 1; }
+  .metric .m-top { display: flex; align-items: center; justify-content: space-between; }
+  .metric .m-label { font-size: 11px; font-weight: 650; color: var(--muted); text-transform: uppercase; letter-spacing: .6px; }
+  .metric .m-icon { width: 34px; height: 34px; border-radius: 11px; display: grid; place-items: center; font-size: 16px; background: var(--accent-soft); color: var(--accent); transition: transform .3s var(--spring); }
+  .metric:hover .m-icon { transform: scale(1.12) rotate(-6deg); }
+  .metric .m-value { font-size: 34px; font-weight: 750; margin-top: 10px; font-variant-numeric: tabular-nums; letter-spacing: -1px; line-height: 1; animation: popValue .4s var(--spring); }
+  .metric .m-foot { font-size: 11px; color: var(--muted); margin-top: 5px; }
+  .metric .m-foot .up { color: var(--green); } .metric .m-foot .down { color: var(--red); }
+  .metric .m-spark { position: absolute; right: 0; bottom: 0; left: 0; height: 30px; opacity: .5; }
+  .metric.tone-blue   .m-icon { background: color-mix(in srgb, var(--blue) 18%, transparent);   color: var(--blue); }
+  .metric.tone-green  .m-icon { background: color-mix(in srgb, var(--green) 18%, transparent);  color: var(--green); }
+  .metric.tone-yellow .m-icon { background: color-mix(in srgb, var(--yellow) 18%, transparent); color: var(--yellow); }
+  .metric.tone-red    .m-icon { background: color-mix(in srgb, var(--red) 18%, transparent);    color: var(--red); }
+  .metric.tone-purple .m-icon { background: color-mix(in srgb, var(--purple) 18%, transparent); color: var(--purple); }
+  .metric.tone-muted  .m-icon { background: color-mix(in srgb, var(--muted) 18%, transparent);  color: var(--muted); }
+
+  /* ── Status badges ── */
+  .badge {
+    display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700;
+    padding: 3px 11px; border-radius: 999px; letter-spacing: .3px; white-space: nowrap;
+    background: color-mix(in srgb, var(--c, var(--muted)) 18%, transparent);
+    color: var(--c, var(--muted)); border: 1px solid color-mix(in srgb, var(--c, var(--muted)) 32%, transparent);
+  }
+  .badge.animate { animation: pop .4s var(--spring); }
+  .badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+  .badge.live::before { animation: ring 1.8s ease-out infinite; }
+  @keyframes ring { 0%{ box-shadow: 0 0 0 0 color-mix(in srgb, currentColor 60%, transparent);} 70%{ box-shadow: 0 0 0 6px transparent;} 100%{ box-shadow: 0 0 0 0 transparent;} }
+  .s-INITIALIZING,.s-EXPIRED,.s-RISK_TIMEOUT      { --c: var(--muted); }
+  .s-PENDING_CORRECTION,.s-AWAITING_RISK_ASSESSMENT { --c: var(--yellow); }
+  .s-AWAITING_PAYMENT,.s-VALIDATING_PAYMENT       { --c: var(--blue); }
+  .s-PAYMENT_INVALID,.s-CANCELLED,.s-RISK_REJECTED{ --c: var(--red); }
+  .s-ENRICHING                                    { --c: var(--purple); }
+  .s-FULFILLED                                    { --c: var(--green); }
+  .pill { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; padding: 2px 9px; border-radius: 999px; background: var(--surface3); color: var(--muted); }
+
+  /* ── Tables ── */
+  .table-wrap { overflow-x: auto; border-radius: var(--radius); }
+  table.data { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.data thead { animation: fadeIn .4s var(--ease); }
+  table.data th {
+    text-align: left; font-size: 10px; font-weight: 800; color: var(--muted); text-transform: uppercase;
+    letter-spacing: .6px; padding: 12px var(--pad); border-bottom: 1px solid var(--border);
+    background: var(--surface2); position: sticky; top: 0; cursor: pointer; user-select: none; white-space: nowrap;
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); z-index: 1;
+  }
+  table.data th.no-sort { cursor: default; }
+  table.data th:hover:not(.no-sort) { color: var(--text); }
+  table.data th .sort-ind { opacity: .4; margin-left: 5px; font-size: 9px; }
+  table.data th.sorted .sort-ind { opacity: 1; color: var(--accent); }
+  table.data tbody { animation: fadeIn .45s var(--ease); }
+  table.data td { padding: 11px var(--pad); border-bottom: 1px solid var(--border); height: var(--row-h); vertical-align: middle; }
+  table.data tbody tr { cursor: pointer; transition: background .18s, box-shadow .18s; position: relative; }
+  table.data tbody tr:hover { background: var(--surface2); box-shadow: inset 3px 0 0 var(--accent); }
+  table.data tbody tr.selected { background: var(--accent-soft); box-shadow: inset 3px 0 0 var(--accent); }
+  table.data tbody tr:last-child td { border-bottom: none; }
+  .cell-mono { font-family: var(--mono); font-size: 12px; }
+  .cell-id { color: var(--accent); font-weight: 650; }
+  .cell-actions { display: flex; gap: 6px; }
+
+  /* ── Toolbar ── */
+  .toolbar { display: flex; align-items: center; gap: 11px; flex-wrap: wrap; margin-bottom: var(--gap); }
+  .toolbar .grow { flex: 1; }
+  .seg { display: inline-flex; background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 4px; gap: 3px; }
+  .seg button { background: none; border: none; color: var(--muted); font-size: 12px; font-weight: 650; padding: 6px 13px; border-radius: 8px; cursor: pointer; transition: background .25s var(--ease), color .2s, transform .15s; }
+  .seg button:hover { color: var(--text); }
+  .seg button:active { transform: scale(.94); }
+  .seg button.active { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: var(--accent-text); box-shadow: var(--shadow-sm); }
+
+  /* ── Inputs ── */
+  .input, select.input {
+    background: var(--surface2); border: 1px solid var(--border); color: var(--text);
+    padding: 10px 13px; border-radius: var(--radius-sm); font-size: 13px; font-family: var(--font);
+    outline: none; transition: border-color .2s, box-shadow .2s, background .2s, transform .2s;
+  }
+  .input:focus { border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
+  .input.mono { font-family: var(--mono); font-size: 12px; }
+  textarea.input { resize: vertical; min-height: 96px; width: 100%; }
+  .input-icon { position: relative; display: inline-flex; align-items: center; }
+  .input-icon > span { position: absolute; left: 11px; color: var(--muted); font-size: 13px; pointer-events: none; }
+  .input-icon > .input { padding-left: 32px; }
+
+  /* ── Buttons ── */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 18px;
+    border-radius: var(--radius-sm); font-size: 13px; font-weight: 650; cursor: pointer; border: 1px solid transparent;
+    white-space: nowrap; position: relative; overflow: hidden; letter-spacing: .2px;
+    transition: transform .18s var(--spring), box-shadow .25s, filter .2s, border-color .2s, color .2s, background .2s;
+  }
+  .btn::before { content:''; position:absolute; top:0; left:-120%; width:60%; height:100%; background: linear-gradient(100deg, transparent, rgba(255,255,255,.35), transparent); transform: skewX(-18deg); transition: left .6s var(--ease); }
+  .btn:hover::before { left: 130%; }
+  .btn:hover { transform: translateY(-2px); }
+  .btn:active { transform: translateY(0) scale(.96); }
+  .btn:disabled { opacity: .45; cursor: not-allowed; transform: none; box-shadow: none; filter: grayscale(.3); }
+  .btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: var(--accent-text); box-shadow: 0 8px 22px -10px color-mix(in srgb, var(--accent) 80%, transparent); }
+  .btn-primary:hover { box-shadow: 0 12px 30px -8px color-mix(in srgb, var(--accent) 85%, transparent); }
+  .btn-danger  { background: linear-gradient(135deg, var(--red), #ff9a8a); color: #2a0606; box-shadow: 0 8px 22px -10px color-mix(in srgb, var(--red) 70%, transparent); }
+  .btn-warn    { background: linear-gradient(135deg, var(--yellow), #ffd98a); color: #2a2206; }
+  .btn-success { background: linear-gradient(135deg, var(--green), #84e8b0); color: #04130a; }
+  .btn-ghost   { background: var(--surface2); color: var(--text); border-color: var(--border); }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-sm { padding: 6px 12px; font-size: 12px; }
+  .btn-xs { padding: 4px 10px; font-size: 11px; border-radius: 8px; }
+  .btn-icon { padding: 8px; width: 36px; }
+  .btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: var(--gap); }
+
+  /* ── Forms ── */
+  .field { margin-bottom: var(--gap); }
+  .field > label { display: block; font-size: 11px; font-weight: 650; color: var(--muted); text-transform: uppercase; letter-spacing: .6px; margin-bottom: 7px; }
+  .field .hint { font-size: 11px; color: var(--muted); margin-top: 6px; }
+  .field .err { font-size: 11px; color: var(--red); margin-top: 6px; display: none; }
+  .field.invalid .input { border-color: var(--red); box-shadow: 0 0 0 4px color-mix(in srgb, var(--red) 18%, transparent); }
+  .field.invalid .err { display: block; animation: shake .4s; }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-5px)} 40%,80%{transform:translateX(5px)} }
+  .field .input { width: 100%; }
+  .toggle-row { display: flex; align-items: center; gap: 10px; margin-top: 8px; font-size: 12px; color: var(--text2); }
+  input[type=checkbox] { accent-color: var(--accent); width: 16px; height: 16px; }
+
+  /* ── Toggle switch ── */
+  .switch { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0; }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .switch .slider { position: absolute; inset: 0; background: var(--surface3); border: 1px solid var(--border); border-radius: 999px; cursor: pointer; transition: background .3s, border-color .3s; }
+  .switch .slider::before { content: ''; position: absolute; height: 18px; width: 18px; left: 2px; top: 2px; background: var(--muted); border-radius: 50%; transition: transform .35s var(--spring), background .3s; }
+  .switch input:checked + .slider { background: linear-gradient(135deg, var(--accent), var(--accent-2)); border-color: transparent; }
+  .switch input:checked + .slider::before { transform: translateX(20px); background: #fff; }
+
+  /* ── Item builder ── */
+  .item-builder { display: flex; flex-direction: column; gap: 9px; }
+  .ib-row { display: grid; grid-template-columns: 1fr 96px 38px; gap: 9px; align-items: center; animation: slideIn .3s var(--ease-out); }
+  .ib-row .input { width: 100%; }
+
+  /* ── Key-value + timeline ── */
+  .kv { display: flex; justify-content: space-between; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+  .kv:last-child { border-bottom: none; }
+  .kv .k { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; }
+  .kv .v { font-family: var(--mono); font-size: 12px; text-align: right; word-break: break-all; }
+
+  .timeline { position: relative; padding-left: 22px; }
+  .timeline::before { content:''; position:absolute; left:6px; top:6px; bottom:6px; width:2px; background: linear-gradient(var(--accent), var(--border)); }
+  .tl-entry { position: relative; margin-bottom: 16px; }
+  .tl-entry:last-child { margin-bottom: 0; }
+  .tl-dot { position: absolute; left: -22px; top: 2px; width: 12px; height: 12px; border-radius: 50%; background: var(--surface3); border: 2px solid var(--border); transition: all .3s; }
+  .tl-entry.done .tl-dot { background: var(--c, var(--accent)); border-color: var(--c, var(--accent)); }
+  .tl-entry.latest .tl-dot { animation: pop .4s var(--spring); box-shadow: 0 0 0 5px var(--accent-soft); }
+  .tl-entry.latest { animation: slideIn .4s var(--ease-out); }
+  .tl-status { font-size: 13px; font-weight: 650; }
+  .tl-time { font-size: 10px; color: var(--muted); font-family: var(--mono); }
+  .tl-note { font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+  /* ── Drawer ── */
+  .scrim { position: fixed; inset: 0; background: rgba(4,6,12,.55); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); z-index: 40; opacity: 0; pointer-events: none; transition: opacity .35s; }
+  .scrim.show { opacity: 1; pointer-events: auto; }
+  .drawer {
+    position: fixed; top: 0; right: 0; bottom: 0; width: min(580px, 94vw); z-index: 50;
+    background: var(--surface-solid); border-left: 1px solid var(--border2); box-shadow: var(--shadow);
+    transform: translateX(102%); transition: transform .45s var(--ease-out); display: flex; flex-direction: column;
+  }
+  .drawer.show { transform: translateX(0); }
+  .drawer-head { padding: 18px var(--pad-lg); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
+  .drawer-head h3 { font-size: 16px; font-family: var(--mono); }
+  .drawer-body { flex: 1; overflow-y: auto; padding: var(--pad-lg); }
+  .drawer.show .drawer-body > * { animation: fadeUp .5s var(--ease-out) backwards; }
+  .drawer.show .drawer-body > *:nth-child(2){animation-delay:.06s}
+  .drawer.show .drawer-body > *:nth-child(3){animation-delay:.12s}
+  .drawer-foot { padding: 15px var(--pad-lg); border-top: 1px solid var(--border); display: flex; gap: 10px; flex-wrap: wrap; }
+
+  /* ── Modal ── */
+  .modal { position: fixed; inset: 0; z-index: 60; display: none; place-items: center; padding: 20px; background: rgba(4,6,12,.5); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
+  .modal.show { display: grid; animation: fadeIn .25s; }
+  .modal-box { background: var(--surface-solid); border: 1px solid var(--border2); border-radius: var(--radius-lg); box-shadow: var(--shadow); width: min(620px, 96vw); max-height: 88vh; overflow: hidden; display: flex; flex-direction: column; animation: modalIn .4s var(--spring); }
+  .modal-head { padding: 18px 22px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .modal-head h3 { font-size: 16px; }
+  .modal-body { padding: 22px; overflow-y: auto; }
+
+  .kbd { display: inline-block; padding: 2px 7px; font-size: 10px; font-family: var(--mono); background: var(--surface3); border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 6px; color: var(--muted); }
+
+  /* ── Toasts ── */
+  .toast-stack { position: fixed; bottom: 40px; right: 20px; z-index: 90; display: flex; flex-direction: column; gap: 11px; max-width: 360px; }
+  .toast { background: var(--surface-solid); border: 1px solid var(--border2); border-left: 4px solid var(--muted); border-radius: var(--radius); box-shadow: var(--shadow-md); padding: 13px 15px; font-size: 12.5px; white-space: pre-line; color: var(--text2); animation: toastIn .45s var(--spring); position: relative; overflow: hidden; cursor: pointer; }
+  .toast:hover { transform: translateX(-3px); }
+  .toast.out { animation: toastOut .3s var(--ease) forwards; }
+  .toast-title { font-weight: 750; font-size: 12.5px; margin-bottom: 3px; display: flex; align-items: center; gap: 6px; }
+  .toast .toast-prog { position: absolute; left: 0; bottom: 0; height: 3px; background: currentColor; opacity: .6; animation: shrink linear forwards; border-radius: 0 3px 0 0; }
+  .toast.success { border-left-color: var(--green); } .toast.success .toast-title { color: var(--green); }
+  .toast.error   { border-left-color: var(--red); }   .toast.error .toast-title { color: var(--red); }
+  .toast.info    { border-left-color: var(--blue); }  .toast.info .toast-title { color: var(--blue); }
+  .toast.signal  { border-left-color: var(--purple); }.toast.signal .toast-title { color: var(--purple); }
+  .toast.warn    { border-left-color: var(--yellow); }.toast.warn .toast-title { color: var(--yellow); }
+  @keyframes shrink { from { width: 100%; } to { width: 0; } }
+
+  /* ── Empty states ── */
+  .empty { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 64px 20px; text-align: center; color: var(--muted); animation: fadeUp .5s var(--ease-out); }
+  .empty .e-icon { font-size: 50px; opacity: .4; animation: bob 3.4s ease-in-out infinite; }
+  @keyframes bob { 0%,100%{ transform: translateY(0);} 50%{ transform: translateY(-10px);} }
+  .empty .e-text { font-size: 13px; line-height: 1.6; max-width: 340px; }
+
+  /* ── Misc ── */
+  .row { display: flex; align-items: center; gap: 10px; }
+  .col { display: flex; flex-direction: column; gap: 10px; }
+  .wrap { flex-wrap: wrap; }
+  .mt { margin-top: var(--gap); } .mb { margin-bottom: var(--gap); }
+  .muted { color: var(--muted); } .small { font-size: 12px; } .tiny { font-size: 11px; }
+  .tabular { font-variant-numeric: tabular-nums; }
+  .divider { height: 1px; background: var(--border); margin: var(--gap) 0; }
+  .swatch-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .swatch { width: 36px; height: 36px; border-radius: 11px; cursor: pointer; border: 2px solid transparent; transition: transform .2s var(--spring), border-color .2s, box-shadow .2s; }
+  .swatch:hover { transform: scale(1.14) translateY(-2px); box-shadow: var(--shadow-sm); }
+  .swatch.active { border-color: var(--text); box-shadow: 0 0 0 4px var(--accent-soft); }
+  .log-line { display: grid; grid-template-columns: 84px 70px 1fr; gap: 12px; padding: 8px var(--pad); border-bottom: 1px solid var(--border); font-size: 12px; align-items: center; }
+  .log-line:hover { background: var(--surface2); }
+  .log-time { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+  .log-msg { color: var(--text2); } .log-msg .mono { color: var(--text); }
+
+  /* ── Keyframes ── */
+  @keyframes viewIn { from { opacity: 0; transform: translateY(14px) scale(.99); } to { opacity: 1; transform: translateY(0) scale(1); } }
+  @keyframes cardIn { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes slideIn { from { opacity: 0; transform: translateX(-12px); } to { opacity: 1; transform: translateX(0); } }
+  @keyframes pop { 0% { transform: scale(.8); } 60% { transform: scale(1.06); } 100% { transform: scale(1); } }
+  @keyframes popValue { from { opacity: 0; transform: translateY(6px) scale(.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
+  @keyframes modalIn { from { opacity: 0; transform: translateY(20px) scale(.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+  @keyframes toastIn { from { opacity: 0; transform: translateX(48px) scale(.95); } to { opacity: 1; transform: translateX(0) scale(1); } }
+  @keyframes toastOut { to { opacity: 0; transform: translateX(48px) scale(.95); } }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spin { animation: spin 1s linear infinite; display: inline-block; }
+
+  @media (prefers-reduced-motion: reduce) { *, body::before, body::after { animation: none !important; transition: none !important; } }
+  :root[data-motion="off"] *, :root[data-motion="off"] body::before, :root[data-motion="off"] body::after { animation: none !important; transition: none !important; }
+
+  @media (max-width: 880px) {
+    .mobile-only { display: grid; }
+    .nav {
+      position: absolute; top: 64px; left: 0; right: 0; flex-direction: column; align-items: stretch;
+      gap: 6px; padding: 12px; background: var(--surface-solid); border-bottom: 1px solid var(--border2);
+      box-shadow: var(--shadow-md); transform: translateY(-14px); opacity: 0; pointer-events: none;
+      transition: opacity .25s, transform .3s var(--ease-out); z-index: 20;
+    }
+    .app.nav-open .nav { transform: translateY(0); opacity: 1; pointer-events: auto; }
+    .nav-item { justify-content: flex-start; border-radius: 12px; }
+    .search-box { display: none; }
+    .substatus { overflow-x: auto; }
+  }
+
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+  <!-- ── Top bar ── -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-logo"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div>
+      <div class="brand-name">OMS Console<small>ORDER MANAGEMENT</small></div>
+    </div>
+    <nav class="nav" id="nav">
+      <div class="nav-item active" data-view="overview"><span class="ni-icon"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg></span><span class="ni-label">Overview</span></div>
+      <div class="nav-item" data-view="orders"><span class="ni-icon"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg></span><span class="ni-label">Orders</span><span class="ni-count" id="navOrdersCount">0</span></div>
+      <div class="nav-item" data-view="create"><span class="ni-icon"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg></span><span class="ni-label">Create Order</span></div>
+      <div class="nav-item" data-view="settings"><span class="ni-icon"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></span><span class="ni-label">Settings</span></div>
+    </nav>
+    <div class="header-spacer"></div>
+    <div class="search-box" title="Search orders (press /)">
+      <span><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span>
+      <input type="text" id="globalSearch" placeholder="Search orders…" autocomplete="off">
+      <span class="kbd">/</span>
+    </div>
+    <button class="icon-btn" id="themeToggle" title="Toggle light / dark"><span id="themeIcon"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg></span></button>
+    <button class="icon-btn" id="helpBtn" title="Help & shortcuts (?)"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></button>
+    <button class="icon-btn mobile-only" id="navToggle" title="Menu"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16"/><path d="M4 6h16"/><path d="M4 18h16"/></svg></button>
+  </header>
+
+  <!-- ── Context / status strip ── -->
+  <div class="substatus">
+    <span class="view-title" id="viewTitle"><span class="vt-icon"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg></span> Overview</span>
+    <div class="header-spacer"></div>
+    <span class="sb-item"><span class="conn-dot checking" id="connDot"></span> <span id="connText">Connecting…</span></span>
+    <span class="sb-sep"></span>
+    <span class="sb-item" id="sbLatency">— ms</span>
+    <span class="sb-sep"></span>
+    <span class="sb-item" id="sbPoll">Polling idle</span>
+    <span class="sb-sep"></span>
+    <span class="sb-item" id="sbOrders">0 orders</span>
+    <span class="sb-sep"></span>
+    <span class="sb-item mono" id="sbApi"></span>
+  </div>
+
+  <!-- ── Main ── -->
+  <main class="main" id="main">
+    <section class="view active" id="view-overview"></section>
+    <section class="view" id="view-orders"></section>
+    <section class="view" id="view-create"></section>
+    <section class="view" id="view-settings"></section>
+  </main>
+
+</div>
+
+<!-- ── Drawer (order detail) ── -->
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-hidden="true">
+  <div class="drawer-head">
+    <span class="vt-icon"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg></span>
+    <h3 id="drawerTitle">—</h3>
+    <div class="header-spacer" style="flex:1"></div>
+    <button class="icon-btn" id="drawerClose" title="Close (Esc)"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+  </div>
+  <div class="drawer-body" id="drawerBody"></div>
+  <div class="drawer-foot" id="drawerFoot"></div>
+</aside>
+
+<!-- ── Modal ── -->
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <div class="modal-head"><h3 id="modalTitle">—</h3><button class="icon-btn" id="modalClose"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<!-- ── Toasts ── -->
+<div class="toast-stack" id="toastStack"></div>
+
+<script>
+"use strict";
+/* ╔══════════════════════════════════════════════════════════════════════════╗
+   ║  OMS CONSOLE — single-file front-end for the Temporal order workflow POC   ║
+   ║  Vanilla JS, no dependencies. Talks to the Python aiohttp API on :3000.    ║
+   ╚══════════════════════════════════════════════════════════════════════════╝ */
+
+/* ══════════════════════════════════════════════════════════════════════════
+   1. STATUS METADATA & CONSTANTS
+   ════════════════════════════════════════════════════════════════════════ */
+const STATUS_INFO = {
+  INITIALIZING:             { cat: 'neutral',    desc: 'Order received; getting started.' },
+  PENDING_CORRECTION:       { cat: 'pending',    desc: 'Order needs correction before it can proceed.' },
+  AWAITING_PAYMENT:         { cat: 'active',     desc: 'Waiting for payment (up to 30 days).' },
+  VALIDATING_PAYMENT:       { cat: 'active',     desc: 'Verifying the payment.' },
+  PAYMENT_INVALID:          { cat: 'failed',     desc: 'Payment was rejected; waiting for a valid payment.' },
+  ENRICHING:                { cat: 'processing', desc: 'Preparing the order for fulfilment.' },
+  FULFILLED:                { cat: 'success',    desc: 'Order completed and sent for fulfilment.', terminal: true },
+  CANCELLED:                { cat: 'failed',     desc: 'Order was cancelled before payment.', terminal: true },
+  EXPIRED:                  { cat: 'neutral',    desc: 'No payment received within 30 days.', terminal: true },
+  RISK_REJECTED:            { cat: 'failed',     desc: 'Order rejected during risk review.', terminal: true },
+  RISK_TIMEOUT:             { cat: 'neutral',    desc: 'Risk review window elapsed.', terminal: true },
+  AWAITING_RISK_ASSESSMENT: { cat: 'pending',    desc: 'Awaiting risk review.' },
+};
+const CAT_VAR = { neutral: '--muted', pending: '--yellow', active: '--blue', processing: '--purple', success: '--green', failed: '--red' };
+const TERMINAL = new Set(Object.keys(STATUS_INFO).filter(s => STATUS_INFO[s].terminal));
+const ALL_STATUSES = Object.keys(STATUS_INFO);
+
+const DEFAULT_ITEMS = [{ item_id: 'ITEM-A1', quantity: 2 }, { item_id: 'ITEM-B2', quantity: 1 }];
+const STORAGE_KEY = 'oms-console-v1';
+
+const VIEW_META = {
+  overview:  { icon: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>', title: 'Overview' },
+  orders:    { icon: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>', title: 'Orders' },
+  create:    { icon: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>', title: 'Create Order' },
+  settings:  { icon: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>', title: 'Settings' },
+};
+
+/* ══════════════════════════════════════════════════════════════════════════
+   2. DOM HELPERS
+   ════════════════════════════════════════════════════════════════════════ */
+const $  = (sel, root = document) => root.querySelector(sel);
+const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+const byId = id => document.getElementById(id);
+
+function esc(v) {
+  return String(v == null ? '' : v)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+function fmtTime(ts) {
+  return new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+}
+function fmtDateTime(ts) {
+  return new Date(ts).toLocaleString([], { month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+}
+function fmtMoney(cents) {
+  if (cents == null || isNaN(cents)) return '—';
+  return '$' + (cents / 100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+function relTime(ts) {
+  const s = Math.floor((Date.now() - ts) / 1000);
+  if (s < 5) return 'just now';
+  if (s < 60) return s + 's ago';
+  const m = Math.floor(s / 60);
+  if (m < 60) return m + 'm ago';
+  const h = Math.floor(m / 60);
+  if (h < 24) return h + 'h ago';
+  return Math.floor(h / 24) + 'd ago';
+}
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+function debounce(fn, ms) {
+  let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); };
+}
+function badgeHTML(status, opts = {}) {
+  const cls = 'badge s-' + status + (opts.live ? ' live' : '') + (opts.animate ? ' animate' : '');
+  return `<span class="${cls}">${esc(status)}</span>`;
+}
+function download(filename, text, mime = 'application/json') {
+  const blob = new Blob([text], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   3. STATE + PERSISTENCE
+   ════════════════════════════════════════════════════════════════════════ */
+const DEFAULT_SETTINGS = {
+  apiBase: 'http://localhost:3000/api',
+  temporalUi: 'http://localhost:8080',
+  pollInterval: 1500,
+  autoPoll: true,
+  theme: 'dark',
+  accent: 'blue',
+  density: 'comfortable',
+  motion: 'on',
+  navCollapsed: false,
+};
+
+const state = {
+  orders: {},            // orderId -> order record
+  events: [],            // {id, ts, kind, msg, orderId}
+  unseenEvents: 0,
+  selectedOrderId: null,
+  ordersSort: { key: 'createdAt', dir: 'desc' },
+  ordersFilter: 'all',
+  ordersStatus: '',
+  ordersQuery: '',
+  eventsFilter: 'all',
+  eventsQuery: '',
+  currentView: 'overview',
+  statePreview: 'AWAITING_PAYMENT',
+  createDraft: { items: DEFAULT_ITEMS.map(i => ({ ...i })) },
+  lastLatency: null,
+  connection: 'checking',
+  settings: { ...DEFAULT_SETTINGS },
+  scenarioRunning: null,
+};
+
+function saveState() {
+  try {
+    const orders = {};
+    for (const id in state.orders) {
+      const o = state.orders[id];
+      orders[id] = { ...o, _poll: undefined };
+    }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      orders,
+      events: state.events.slice(-500),
+      settings: state.settings,
+    }));
+  } catch (e) { /* storage full or unavailable — non-fatal */ }
+}
+const saveStateDebounced = debounce(saveState, 400);
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    const data = JSON.parse(raw);
+    if (data.settings) state.settings = { ...DEFAULT_SETTINGS, ...data.settings };
+    if (data.orders) state.orders = data.orders;
+    if (Array.isArray(data.events)) state.events = data.events;
+  } catch (e) { /* corrupt storage — start fresh */ }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   4. TOASTS
+   ════════════════════════════════════════════════════════════════════════ */
+const TOAST_TITLES = { success: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg> Success', error: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg> Error', info: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg> Info', signal: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg> Signal', warn: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg> Warning' };
+function toast(message, type = 'info', title) {
+  const stack = byId('toastStack');
+  const el = document.createElement('div');
+  el.className = 'toast ' + type;
+  const ttl = 4200;
+  el.innerHTML = `<div class="toast-title">${title || TOAST_TITLES[type] || ''}</div>${esc(message)}` +
+    `<div class="toast-prog" style="animation-duration:${ttl}ms"></div>`;
+  stack.appendChild(el);
+  const close = () => { el.classList.add('out'); el.addEventListener('animationend', () => el.remove(), { once: true }); };
+  const timer = setTimeout(close, ttl);
+  el.addEventListener('click', () => { clearTimeout(timer); close(); });
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   5. EVENT LOG
+   ════════════════════════════════════════════════════════════════════════ */
+let eventSeq = 0;
+function logEvent(kind, msg, orderId) {
+  state.events.push({ id: ++eventSeq, ts: Date.now(), kind, msg, orderId: orderId || null });
+  if (state.events.length > 1000) state.events = state.events.slice(-1000);
+  saveStateDebounced();
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   6. API LAYER
+   ════════════════════════════════════════════════════════════════════════ */
+async function apiFetch(method, path, body, opts = {}) {
+  const url = state.settings.apiBase + path;
+  const t0 = performance.now();
+  const init = { method, headers: { 'Content-Type': 'application/json' } };
+  if (body) init.body = JSON.stringify(body);
+  let res, data;
+  try {
+    res = await fetch(url, init);
+  } catch (netErr) {
+    setConnection('offline');
+    if (!opts.quiet) logEvent('error', `${method} ${path} — network error`, opts.orderId);
+    throw new Error('Cannot reach API at ' + state.settings.apiBase);
+  }
+  state.lastLatency = Math.round(performance.now() - t0);
+  setConnection('online');
+  try { data = await res.json(); } catch { data = {}; }
+  if (!opts.quiet) {
+    const kind = res.ok ? 'api' : 'error';
+    logEvent(kind, `${method} ${path} → ${res.status}`, opts.orderId);
+  }
+  if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+  return data;
+}
+
+/* ── High-level actions (used by forms, drawer, scenarios) ── */
+async function actionCreateOrder({ customerId, items }) {
+  // Include order_id in the body to mirror the real Commerce App webhook spec:
+  // { "customer_id": ..., "order": { "order_id": ..., "items": [...] } }
+  // generateOrderId() produces a readable "ORD-<timestamp>" for the demo portal.
+  const body = { customer_id: customerId, order: { order_id: generateOrderId(), items } };
+  const data = await apiFetch('POST', '/orders', body);
+  upsertOrder({
+    orderId: data.orderId, customerId, items: items.slice(),
+    status: 'INITIALIZING', rrn: null, amountCents: null,
+    createdAt: Date.now(), updatedAt: Date.now(),
+    history: [{ status: 'INITIALIZING', ts: Date.now() }],
+    polling: true,
+  });
+  toast(`Order ${data.orderId}\nItems: ${data.itemCount} · Valid: ${data.valid}`, 'success', '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg> Order created');
+  return data;
+}
+async function actionCorrect({ orderId, customerId, items }) {
+  const body = { customer_id: customerId, order: { items } };
+  const data = await apiFetch('POST', '/orders/correct?orderId=' + encodeURIComponent(orderId), body, { orderId });
+  const o = state.orders[orderId];
+  if (o) { o.items = items.slice(); o.polling = true; touchOrder(o); }
+  toast(`Order ${data.orderId}\nItems corrected: ${data.itemCount}`, 'signal', '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg> Order corrected');
+  return data;
+}
+async function actionPayment({ orderId, customerId, rrn, amountCents }) {
+  const body = { customer_id: customerId, rrn, amount_cents: amountCents, metadata: { order_id: orderId } };
+  const data = await apiFetch('POST', '/payments', body, { orderId });
+  const o = state.orders[orderId];
+  if (o) { o.rrn = rrn; o.amountCents = amountCents; o.polling = true; touchOrder(o); }
+  toast(`Order ${data.orderId}\nRRN ${data.rrn} · ${fmtMoney(data.amountCents)}`, 'signal', '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg> Payment captured');
+  return data;
+}
+async function actionCancel({ orderId }) {
+  const data = await apiFetch('POST', '/orders/cancel?orderId=' + encodeURIComponent(orderId), null, { orderId });
+  const o = state.orders[orderId];
+  if (o) { o.polling = true; touchOrder(o); }
+  toast(`Order ${data.orderId}`, 'signal', '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg> Cancellation requested');
+  return data;
+}
+async function fetchStatus(orderId, quiet = true) {
+  const data = await apiFetch('GET', '/orders/status?orderId=' + encodeURIComponent(orderId), null, { quiet, orderId });
+  return data.status;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   7. ORDER STORE OPERATIONS
+   ════════════════════════════════════════════════════════════════════════ */
+function upsertOrder(rec) {
+  state.orders[rec.orderId] = Object.assign(state.orders[rec.orderId] || {}, rec);
+  refresh();
+  saveStateDebounced();
+}
+function touchOrder(o) { o.updatedAt = Date.now(); refresh(); saveStateDebounced(); }
+
+function setOrderStatus(orderId, status) {
+  const o = state.orders[orderId];
+  if (!o || !status) return;
+  if (o.status === status) return;
+  o.status = status;
+  o.updatedAt = Date.now();
+  o.history = o.history || [];
+  o.history.push({ status, ts: Date.now() });
+  if (TERMINAL.has(status)) o.polling = false;
+  logEvent('status', `${orderId} → ${status}`, orderId);
+  refresh();
+  saveStateDebounced();
+}
+function removeOrder(orderId) {
+  delete state.orders[orderId];
+  if (state.selectedOrderId === orderId) closeDrawer();
+  refresh();
+  saveStateDebounced();
+}
+function clearOrders() {
+  state.orders = {};
+  closeDrawer();
+  refresh();
+  saveState();
+}
+function orderList() {
+  return Object.values(state.orders);
+}
+function activeOrders() {
+  return orderList().filter(o => !TERMINAL.has(o.status));
+}
+function generateOrderId() { return 'ORD-' + Date.now(); }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   8. CONNECTION MONITOR
+   ════════════════════════════════════════════════════════════════════════ */
+function setConnection(status) {
+  state.connection = status;
+  const dot = byId('connDot'), txt = byId('connText');
+  dot.className = 'conn-dot ' + status;
+  txt.textContent = status === 'online' ? 'Connected' : status === 'offline' ? 'Disconnected' : 'Connecting…';
+  byId('sbLatency').textContent = state.lastLatency != null ? state.lastLatency + ' ms' : '— ms';
+}
+async function pingConnection() {
+  try {
+    await apiFetch('GET', '/orders/status?orderId=__healthcheck__', null, { quiet: true });
+  } catch (e) {
+    // A 4xx still means the server answered — apiFetch flips to offline only on network error.
+  }
+  byId('sbLatency').textContent = state.lastLatency != null ? state.lastLatency + ' ms' : '— ms';
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   9. POLLING ENGINE
+   ════════════════════════════════════════════════════════════════════════ */
+let pollTimer = null;
+function schedulePoll() {
+  if (pollTimer) clearTimeout(pollTimer);
+  const interval = Math.max(500, state.settings.pollInterval | 0);
+  pollTimer = setTimeout(pollTick, interval);
+}
+async function pollTick() {
+  if (state.settings.autoPoll) {
+    const targets = orderList().filter(o => o.polling && !TERMINAL.has(o.status));
+    byId('sbPoll').textContent = targets.length ? `Polling ${targets.length} active` : 'Polling idle';
+    for (const o of targets) {
+      try {
+        const status = await fetchStatus(o.orderId, true);
+        setOrderStatus(o.orderId, status);
+      } catch (e) {
+        if (/not found/i.test(e.message)) {
+          // Workflow completed and is no longer queryable — stop polling it.
+          o.polling = false;
+          logEvent('system', `${o.orderId} no longer queryable (workflow complete)`, o.orderId);
+          refresh();
+        }
+      }
+    }
+  } else {
+    byId('sbPoll').textContent = 'Polling paused';
+  }
+  schedulePoll();
+}
+/** Poll one order until predicate(status) is true or timeout — used by scenarios. */
+async function waitForStatus(orderId, predicate, timeoutMs = 15000) {
+  const start = Date.now();
+  while (Date.now() - start < timeoutMs) {
+    let status;
+    try { status = await fetchStatus(orderId, true); }
+    catch (e) { if (/not found/i.test(e.message)) return null; throw e; }
+    setOrderStatus(orderId, status);
+    if (predicate(status)) return status;
+    await sleep(700);
+  }
+  return null;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   10. CHARTS (hand-rolled SVG, no deps)
+   ════════════════════════════════════════════════════════════════════════ */
+function donutSVG(segments, centerTop, centerSub) {
+  const size = 168, sw = 22, r = (size - sw) / 2, c = 2 * Math.PI * r, cx = size / 2;
+  const total = segments.reduce((a, s) => a + s.value, 0) || 1;
+  let off = 0, arcs = '';
+  for (const s of segments) {
+    if (s.value <= 0) continue;
+    const len = s.value / total * c;
+    arcs += `<circle cx="${cx}" cy="${cx}" r="${r}" fill="none" stroke="var(${s.varName})" stroke-width="${sw}"`
+      + ` stroke-dasharray="${len.toFixed(2)} ${(c - len).toFixed(2)}" stroke-dashoffset="${(-off).toFixed(2)}"`
+      + ` transform="rotate(-90 ${cx} ${cx})"><title>${esc(s.label)}: ${s.value}</title></circle>`;
+    off += len;
+  }
+  return `<svg viewBox="0 0 ${size} ${size}" width="${size}" height="${size}">`
+    + `<circle cx="${cx}" cy="${cx}" r="${r}" fill="none" stroke="var(--surface3)" stroke-width="${sw}"></circle>`
+    + arcs
+    + `<text x="${cx}" y="${cx - 2}" text-anchor="middle" font-size="30" font-weight="700" fill="var(--text)">${esc(centerTop)}</text>`
+    + `<text x="${cx}" y="${cx + 18}" text-anchor="middle" font-size="10" fill="var(--muted)">${esc(centerSub || '')}</text>`
+    + `</svg>`;
+}
+function sparkSVG(values, varName, h = 34) {
+  if (!values.length) return '';
+  const w = 200;
+  const max = Math.max(...values, 1), min = Math.min(...values, 0);
+  const span = (max - min) || 1;
+  const pts = values.map((v, i) => {
+    const x = (i / (values.length - 1 || 1)) * w;
+    const y = h - ((v - min) / span) * (h - 4) - 2;
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  });
+  const area = `0,${h} ` + pts.join(' ') + ` ${w},${h}`;
+  return `<svg viewBox="0 0 ${w} ${h}" width="100%" height="${h}" preserveAspectRatio="none">`
+    + `<polygon points="${area}" fill="var(${varName})" opacity=".12"/>`
+    + `<polyline points="${pts.join(' ')}" fill="none" stroke="var(${varName})" stroke-width="1.6" stroke-linejoin="round"/>`
+    + `</svg>`;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   12. METRICS
+   ════════════════════════════════════════════════════════════════════════ */
+function computeMetrics() {
+  const list = orderList();
+  const byStatus = {};
+  for (const s of ALL_STATUSES) byStatus[s] = 0;
+  let active = 0, success = 0, failed = 0, pending = 0;
+  for (const o of list) {
+    byStatus[o.status] = (byStatus[o.status] || 0) + 1;
+    const cat = (STATUS_INFO[o.status] || {}).cat;
+    if (!TERMINAL.has(o.status)) active++;
+    if (o.status === 'FULFILLED') success++;
+    if (cat === 'failed' || o.status === 'EXPIRED') failed++;
+    if (cat === 'pending') pending++;
+  }
+  return { total: list.length, active, success, failed, pending, byStatus };
+}
+function throughputSeries(buckets = 16, bucketMs = 60000) {
+  const now = Date.now();
+  const series = new Array(buckets).fill(0);
+  for (const o of orderList()) {
+    const idx = buckets - 1 - Math.floor((now - o.createdAt) / bucketMs);
+    if (idx >= 0 && idx < buckets) series[idx]++;
+  }
+  return series;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   13. ROUTER
+   ════════════════════════════════════════════════════════════════════════ */
+const DATA_VIEWS = new Set(['overview', 'orders']);
+const RENDERERS = {
+  overview: renderOverview, orders: renderOrders, create: renderCreate,
+  settings: renderSettings,
+};
+function renderView(name) { (RENDERERS[name] || (() => {}))(); }
+function showView(name) {
+  if (!VIEW_META[name]) name = 'overview';
+  state.currentView = name;
+  $$('.nav-item[data-view]').forEach(n => n.classList.toggle('active', n.dataset.view === name));
+  $$('.view').forEach(v => v.classList.remove('active'));
+  byId('view-' + name).classList.add('active');
+  const meta = VIEW_META[name];
+  byId('viewTitle').innerHTML = `<span class="vt-icon">${meta.icon}</span> ${meta.title}`;
+  renderView(name);
+  byId('app').classList.remove('nav-open');
+  byId('main').scrollTop = 0;
+}
+function refresh() {
+  byId('navOrdersCount').textContent = orderList().length;
+  byId('sbOrders').textContent = orderList().length + ' orders';
+  if (DATA_VIEWS.has(state.currentView)) renderView(state.currentView);
+  if (state.selectedOrderId && byId('drawer').classList.contains('show')) renderDrawer(state.selectedOrderId);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   14. VIEW: OVERVIEW
+   ════════════════════════════════════════════════════════════════════════ */
+function metricTile(tone, icon, label, value, foot) {
+  return `<div class="metric tone-${tone}"><div class="m-top"><span class="m-label">${esc(label)}</span>`
+    + `<span class="m-icon">${icon}</span></div><div class="m-value tabular">${value}</div>`
+    + `<div class="m-foot">${foot || ''}</div></div>`;
+}
+function renderOverview() {
+  const m = computeMetrics();
+  const series = throughputSeries();
+  const fulfilRate = m.total ? Math.round((m.success / m.total) * 100) : 0;
+
+  const tiles = [
+    metricTile('blue', '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>', 'Total Orders', m.total, 'all time'),
+    metricTile('purple', '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>', 'Active', m.active, 'in flight'),
+    metricTile('green', '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg>', 'Fulfilled', m.success, `${fulfilRate}% fulfilment rate`),
+    metricTile('yellow', '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>', 'Need Action', m.pending, 'pending / correction'),
+    metricTile('red', '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.586 16.726A2 2 0 0 1 2 15.312V8.688a2 2 0 0 1 .586-1.414l4.688-4.688A2 2 0 0 1 8.688 2h6.624a2 2 0 0 1 1.414.586l4.688 4.688A2 2 0 0 1 22 8.688v6.624a2 2 0 0 1-.586 1.414l-4.688 4.688a2 2 0 0 1-1.414.586H8.688a2 2 0 0 1-1.414-.586z"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>', 'Failed / Expired', m.failed, 'terminal non-success'),
+    metricTile('muted', '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>', 'Latency', (state.lastLatency != null ? state.lastLatency : '—'), 'last API call (ms)'),
+  ].join('');
+
+  const segs = ALL_STATUSES.filter(s => m.byStatus[s] > 0)
+    .map(s => ({ label: s, value: m.byStatus[s], varName: CAT_VAR[STATUS_INFO[s].cat] }));
+  const donut = m.total
+    ? donutSVG(segs, String(m.total), 'orders')
+    : `<div class="empty" style="padding:30px"><div class="e-icon"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg></div><div class="e-text">No orders yet.</div></div>`;
+  const legend = ALL_STATUSES.filter(s => m.byStatus[s] > 0).map(s =>
+    `<div class="kv"><span class="k">${badgeHTML(s)}</span><span class="v tabular">${m.byStatus[s]}</span></div>`
+  ).join('') || '<div class="muted small">—</div>';
+
+  const recent = orderList().sort((a, b) => b.updatedAt - a.updatedAt).slice(0, 6).map(o =>
+    `<tr data-order-id="${esc(o.orderId)}"><td class="cell-mono cell-id">${esc(o.orderId)}</td>`
+    + `<td>${badgeHTML(o.status, { live: o.polling })}</td>`
+    + `<td class="muted tiny">${relTime(o.updatedAt)}</td></tr>`
+  ).join('') || `<tr><td colspan="3" class="muted small" style="text-align:center;padding:24px">No activity yet</td></tr>`;
+
+  byId('view-overview').innerHTML = `
+    <div class="view-head"><h2>Overview</h2><p>Snapshot of every order this portal is tracking.</p></div>
+    <div class="grid grid-3 mb">${tiles}</div>
+    <div class="grid" style="grid-template-columns:1.3fr 1fr">
+      <div class="card">
+        <div class="card-head"><h3>Throughput</h3><span class="ch-sub">orders created · last 16 min</span></div>
+        <div class="card-body">${sparkSVG(series, '--accent', 70)}
+          <div class="row wrap" style="justify-content:space-between;margin-top:10px">
+            <span class="tiny muted">16 min ago</span><span class="tiny muted">now</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>Status Distribution</h3></div>
+        <div class="card-body row" style="gap:20px;align-items:center;flex-wrap:wrap">
+          <div>${donut}</div><div style="flex:1;min-width:160px">${legend}</div>
+        </div>
+      </div>
+    </div>
+    <div class="grid mt">
+      <div class="card">
+        <div class="card-head"><h3>Recent Orders</h3><button class="btn btn-ghost btn-xs" data-goto="orders">View all</button></div>
+        <div class="card-body" style="padding:0"><div class="table-wrap"><table class="data"><tbody>${recent}</tbody></table></div></div>
+      </div>
+    </div>`;
+
+  $$('#view-overview [data-goto]').forEach(b => b.onclick = () => showView(b.dataset.goto));
+  $$('#view-overview tr[data-order-id]').forEach(tr => tr.onclick = () => openDrawer(tr.dataset.orderId));
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   15. VIEW: ORDERS
+   ════════════════════════════════════════════════════════════════════════ */
+function getVisibleOrders() {
+  let list = orderList();
+  const q = state.ordersQuery.trim().toLowerCase();
+  if (q) list = list.filter(o => o.orderId.toLowerCase().includes(q) || (o.customerId || '').toLowerCase().includes(q));
+  const f = state.ordersFilter;
+  if (f === 'active') list = list.filter(o => !TERMINAL.has(o.status));
+  else if (f === 'done') list = list.filter(o => o.status === 'FULFILLED');
+  else if (f === 'failed') list = list.filter(o => ['CANCELLED', 'EXPIRED', 'PAYMENT_INVALID', 'RISK_REJECTED', 'RISK_TIMEOUT'].includes(o.status));
+  if (state.ordersStatus) list = list.filter(o => o.status === state.ordersStatus);
+  const { key, dir } = state.ordersSort, s = dir === 'asc' ? 1 : -1;
+  list.sort((a, b) => {
+    let av = a[key], bv = b[key];
+    if (key === 'items') { av = (a.items || []).length; bv = (b.items || []).length; }
+    if (av == null) av = ''; if (bv == null) bv = '';
+    if (typeof av === 'string' && typeof bv === 'string') return av.localeCompare(bv) * s;
+    return (av > bv ? 1 : av < bv ? -1 : 0) * s;
+  });
+  return list;
+}
+function sortInd(key) {
+  if (state.ordersSort.key !== key) return '<span class="sort-ind"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg></span>';
+  return `<span class="sort-ind">${state.ordersSort.dir === 'asc' ? '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>' : '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>'}</span>`;
+}
+function renderOrders() {
+  const list = getVisibleOrders();
+  const statusOpts = ['<option value="">All statuses</option>']
+    .concat(ALL_STATUSES.map(s => `<option value="${s}"${state.ordersStatus === s ? ' selected' : ''}>${s}</option>`)).join('');
+  const cols = [['orderId', 'Order ID'], ['customerId', 'Customer'], ['items', 'Items'], ['status', 'Status'], ['rrn', 'RRN'], ['amountCents', 'Amount'], ['updatedAt', 'Updated']];
+  const headCells = cols.map(([k, label]) =>
+    `<th data-sort-key="${k}" class="${state.ordersSort.key === k ? 'sorted' : ''}">${label}${sortInd(k)}</th>`
+  ).join('') + '<th class="no-sort">Actions</th>';
+
+  const rows = list.map(o => {
+    const term = TERMINAL.has(o.status);
+    return `<tr data-order-id="${esc(o.orderId)}" class="${state.selectedOrderId === o.orderId ? 'selected' : ''}">`
+      + `<td class="cell-mono cell-id">${esc(o.orderId)}</td>`
+      + `<td class="cell-mono">${esc(o.customerId || '—')}</td>`
+      + `<td class="tabular">${(o.items || []).length}</td>`
+      + `<td>${badgeHTML(o.status, { live: o.polling })}</td>`
+      + `<td class="cell-mono">${esc(o.rrn || '—')}</td>`
+      + `<td class="cell-mono tabular">${o.amountCents != null ? fmtMoney(o.amountCents) : '—'}</td>`
+      + `<td class="muted tiny">${relTime(o.updatedAt)}</td>`
+      + `<td class="cell-actions" data-stop>`
+      + `<button class="btn btn-ghost btn-xs" data-act="pay" data-id="${esc(o.orderId)}"${term ? ' disabled' : ''}><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg></button>`
+      + `<button class="btn btn-ghost btn-xs" data-act="cancel" data-id="${esc(o.orderId)}"${term ? ' disabled' : ''}><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/></svg></button>`
+      + `<button class="btn btn-ghost btn-xs" data-act="refresh" data-id="${esc(o.orderId)}"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg></button>`
+      + `</td></tr>`;
+  }).join('');
+
+  const body = list.length
+    ? `<div class="table-wrap"><table class="data"><thead><tr>${headCells}</tr></thead><tbody>${rows}</tbody></table></div>`
+    : `<div class="empty"><div class="e-icon"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg></div><div class="e-text">No orders match. Create one from the <b>Create Order</b> tab or run a <b>Scenario</b>.</div><button class="btn btn-primary" data-goto="create"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg> Create Order</button></div>`;
+
+  byId('view-orders').innerHTML = `
+    <div class="view-head"><h2>Orders</h2><p>Every workflow this console tracks. Click a row for full detail, timeline, and inline signal actions.</p></div>
+    <div class="toolbar">
+      <div class="seg">
+        ${['all', 'active', 'done', 'failed'].map(f => `<button data-filter="${f}" class="${state.ordersFilter === f ? 'active' : ''}">${f[0].toUpperCase() + f.slice(1)}</button>`).join('')}
+      </div>
+      <select class="input" id="ordersStatusSel">${statusOpts}</select>
+      <div class="input-icon grow"><span><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span><input class="input" id="ordersSearch" placeholder="Filter by order or customer…" value="${esc(state.ordersQuery)}" style="width:100%"></div>
+      <button class="btn btn-ghost btn-sm" id="ordersRefresh"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg> Poll now</button>
+      <button class="btn btn-primary btn-sm" data-goto="create"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg> New</button>
+    </div>
+    <div class="card"><div class="card-body" style="padding:0">${body}</div></div>`;
+
+  $$('#view-orders [data-goto]').forEach(b => b.onclick = () => showView(b.dataset.goto));
+  $$('#view-orders [data-filter]').forEach(b => b.onclick = () => { state.ordersFilter = b.dataset.filter; renderOrders(); });
+  byId('ordersStatusSel').onchange = e => { state.ordersStatus = e.target.value; renderOrders(); };
+  byId('ordersSearch').oninput = debounce(e => { state.ordersQuery = e.target.value; renderOrders(); }, 180);
+  byId('ordersRefresh').onclick = () => { pollNow(); toast('Polling all active orders…', 'info'); };
+  $$('#view-orders th[data-sort-key]').forEach(th => th.onclick = () => {
+    const k = th.dataset.sortKey;
+    if (state.ordersSort.key === k) state.ordersSort.dir = state.ordersSort.dir === 'asc' ? 'desc' : 'asc';
+    else state.ordersSort = { key: k, dir: 'asc' };
+    renderOrders();
+  });
+  $$('#view-orders tr[data-order-id]').forEach(tr => tr.onclick = e => {
+    if (e.target.closest('[data-stop]')) return;
+    openDrawer(tr.dataset.orderId);
+  });
+  $$('#view-orders [data-act]').forEach(b => b.onclick = e => {
+    e.stopPropagation();
+    const id = b.dataset.id;
+    if (b.dataset.act === 'pay') openPaymentModal(id);
+    else if (b.dataset.act === 'cancel') confirmCancel(id);
+    else if (b.dataset.act === 'refresh') refreshOne(id);
+  });
+}
+async function pollNow() {
+  const targets = activeOrders();
+  for (const o of targets) {
+    try { setOrderStatus(o.orderId, await fetchStatus(o.orderId, true)); }
+    catch (e) { /* ignore */ }
+  }
+}
+async function refreshOne(id) {
+  try { setOrderStatus(id, await fetchStatus(id, false)); toast('Status refreshed', 'info'); }
+  catch (e) { toast(e.message, 'error'); }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   16. VIEW: CREATE ORDER
+   ════════════════════════════════════════════════════════════════════════ */
+function itemRowHTML(it = { item_id: '', quantity: 1 }) {
+  return `<div class="ib-row">`
+    + `<input class="input ib-item" placeholder="item_id" value="${esc(it.item_id)}">`
+    + `<input class="input ib-qty" type="number" min="1" value="${esc(it.quantity)}">`
+    + `<button class="btn btn-ghost btn-icon ib-del" title="Remove"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></div>`;
+}
+function renderCreate() {
+  const items = state.createDraft.items;
+  byId('view-create').innerHTML = `
+    <div class="view-head"><h2>Create Order</h2><p>Create a new order and submit it for processing.</p></div>
+    <div class="grid" style="grid-template-columns:minmax(0,560px);align-items:start">
+      <div class="card"><div class="card-body">
+        <div class="field"><label>Customer ID</label><input class="input" id="cCustomer" value="CUST-001"></div>
+        <div class="field"><label>Items</label>
+          <div class="item-builder" id="cItems">${items.map(itemRowHTML).join('')}</div>
+          <div class="btn-row" style="margin-top:10px">
+            <button class="btn btn-ghost btn-sm" id="cAddItem"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg> Add item</button>
+          </div></div>
+        <div class="btn-row"><button class="btn btn-primary" id="cSubmit"><svg class="ic" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="6 3 20 12 6 21 6 3"/></svg> Create Order</button></div>
+      </div></div>
+    </div>`;
+
+  const itemsEl = byId('cItems');
+  const readItems = () => $$('.ib-row', itemsEl).map(r => ({
+    item_id: $('.ib-item', r).value.trim(),
+    quantity: parseInt($('.ib-qty', r).value) || 0,
+  }));
+  const rewire = () => {
+    $$('.ib-del', itemsEl).forEach(b => b.onclick = () => {
+      if ($$('.ib-row', itemsEl).length <= 1) { b.closest('.ib-row').querySelector('.ib-item').value = ''; }
+      else b.closest('.ib-row').remove();
+    });
+  };
+  rewire();
+  byId('cAddItem').onclick = () => { itemsEl.insertAdjacentHTML('beforeend', itemRowHTML()); rewire(); };
+  byId('cSubmit').onclick = async () => {
+    const customerId = byId('cCustomer').value.trim() || 'CUST-001';
+    const items = readItems().filter(i => i.item_id);
+    state.createDraft.items = items.length ? items : [{ item_id: '', quantity: 1 }];
+    const btn = byId('cSubmit'); btn.disabled = true; btn.innerHTML = '<span class="spin"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg></span> Creating…';
+    try {
+      const data = await actionCreateOrder({ customerId, items });
+      openDrawer(data.orderId);
+      state.createDraft.items = DEFAULT_ITEMS.map(i => ({ ...i }));
+    } catch (e) { toast(e.message, 'error'); }
+    finally { if (state.currentView === 'create') renderCreate(); }
+  };
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   21. VIEW: SETTINGS
+   ════════════════════════════════════════════════════════════════════════ */
+function renderSettings() {
+  const s = state.settings;
+  const accents = ['blue', 'purple', 'green', 'teal', 'orange', 'pink'];
+  byId('view-settings').innerHTML = `
+    <div class="view-head"><h2>Settings</h2><p>Connection, polling, and appearance. Everything here persists to this browser.</p></div>
+    <div class="grid grid-2" style="align-items:start">
+      <div class="card"><div class="card-head"><h3>Connection</h3></div><div class="card-body">
+        <div class="field"><label>API Base URL</label><input class="input mono" id="setApi" value="${esc(s.apiBase)}"></div>
+        <div class="field"><label>Poll interval (ms)</label><input class="input" type="number" min="500" step="100" id="setPoll" value="${s.pollInterval}"></div>
+        <div class="row" style="justify-content:space-between"><label class="small">Auto-poll active orders</label>
+          <label class="switch"><input type="checkbox" id="setAuto" ${s.autoPoll ? 'checked' : ''}><span class="slider"></span></label></div>
+      </div></div>
+      <div class="card"><div class="card-head"><h3>Appearance</h3></div><div class="card-body">
+        <div class="field"><label>Theme</label>
+          <div class="seg"><button data-theme-set="dark" class="${s.theme === 'dark' ? 'active' : ''}"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg> Dark</button><button data-theme-set="light" class="${s.theme === 'light' ? 'active' : ''}"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg> Light</button></div></div>
+        <div class="field"><label>Accent</label><div class="swatch-row">
+          ${accents.map(a => `<div class="swatch ${s.accent === a ? 'active' : ''}" data-accent-set="${a}" style="background:var(--${a})" title="${a}"></div>`).join('')}</div></div>
+        <div class="field"><label>Density</label>
+          <div class="seg">${['compact', 'comfortable', 'spacious'].map(d => `<button data-density-set="${d}" class="${s.density === d ? 'active' : ''}">${d[0].toUpperCase() + d.slice(1)}</button>`).join('')}</div></div>
+        <div class="row" style="justify-content:space-between"><label class="small">Animations</label>
+          <label class="switch"><input type="checkbox" id="setMotion" ${s.motion === 'on' ? 'checked' : ''}><span class="slider"></span></label></div>
+      </div></div>
+      <div class="card"><div class="card-head"><h3>Data</h3></div><div class="card-body">
+        <p class="small muted mb">${orderList().length} orders tracked in this browser.</p>
+        <div class="btn-row" style="margin-top:0">
+          <button class="btn btn-ghost btn-sm" id="setExport"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg> Export</button>
+          <button class="btn btn-ghost btn-sm" id="setImport"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg> Import</button>
+          <button class="btn btn-ghost btn-sm" id="setClearOrders"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> Clear orders</button>
+          <button class="btn btn-ghost btn-sm" id="setReset"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg> Reset settings</button>
+        </div>
+      </div></div>
+      <div class="card"><div class="card-head"><h3>About</h3></div><div class="card-body small muted">
+        <p>OMS — Order Management portal.</p>
+        <p style="margin-top:8px">Press <span class="kbd">?</span> for keyboard shortcuts.</p>
+      </div></div>
+    </div>`;
+
+  byId('setApi').onchange = e => { s.apiBase = e.target.value.trim(); applySettings(); saveState(); };
+  byId('setPoll').onchange = e => { s.pollInterval = Math.max(500, parseInt(e.target.value) || 1500); saveState(); };
+  byId('setAuto').onchange = e => { s.autoPoll = e.target.checked; saveState(); };
+  byId('setMotion').onchange = e => { s.motion = e.target.checked ? 'on' : 'off'; applySettings(); saveState(); };
+  $$('#view-settings [data-theme-set]').forEach(b => b.onclick = () => { s.theme = b.dataset.themeSet; applySettings(); saveState(); renderSettings(); });
+  $$('#view-settings [data-accent-set]').forEach(b => b.onclick = () => { s.accent = b.dataset.accentSet; applySettings(); saveState(); renderSettings(); });
+  $$('#view-settings [data-density-set]').forEach(b => b.onclick = () => { s.density = b.dataset.densitySet; applySettings(); saveState(); renderSettings(); });
+  byId('setExport').onclick = () => download('oms-console-export.json', JSON.stringify({ orders: state.orders, settings: s }, null, 2));
+  byId('setImport').onclick = openImportModal;
+  byId('setClearOrders').onclick = () => { if (confirm('Remove all tracked orders from this console? (Does not affect the workflows themselves.)')) { clearOrders(); renderSettings(); toast('Orders cleared', 'info'); } };
+  byId('setReset').onclick = () => { state.settings = { ...DEFAULT_SETTINGS }; applySettings(); saveState(); renderSettings(); toast('Settings reset', 'info'); };
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   22. DRAWER (order detail)
+   ════════════════════════════════════════════════════════════════════════ */
+function openDrawer(orderId) {
+  if (!state.orders[orderId]) return;
+  state.selectedOrderId = orderId;
+  renderDrawer(orderId);
+  byId('scrim').classList.add('show');
+  byId('drawer').classList.add('show');
+  byId('drawer').setAttribute('aria-hidden', 'false');
+}
+function closeDrawer() {
+  state.selectedOrderId = null;
+  byId('scrim').classList.remove('show');
+  byId('drawer').classList.remove('show');
+  byId('drawer').setAttribute('aria-hidden', 'true');
+  if (DATA_VIEWS.has(state.currentView)) renderView(state.currentView);
+}
+function renderDrawer(orderId) {
+  const o = state.orders[orderId]; if (!o) return;
+  byId('drawerTitle').textContent = orderId;
+  const kv = [
+    ['Status', badgeHTML(o.status, { live: o.polling, animate: true })],
+    ['Customer', esc(o.customerId || '—')],
+    ['Created', fmtDateTime(o.createdAt)],
+    ['Updated', fmtDateTime(o.updatedAt)],
+    ['RRN', esc(o.rrn || '—')],
+    ['Amount', o.amountCents != null ? fmtMoney(o.amountCents) : '—'],
+    ['Polling', o.polling ? 'live' : 'stopped'],
+  ].map(([k, v]) => `<div class="kv"><span class="k">${k}</span><span class="v">${v}</span></div>`).join('');
+  const items = (o.items || []).length
+    ? (o.items || []).map(it => `<div class="kv"><span class="k mono" style="text-transform:none">${esc(it.item_id)}</span><span class="v">×${esc(it.quantity)}${it.sku_id ? ' · ' + esc(it.sku_id) : ''}</span></div>`).join('')
+    : '<div class="muted small">No items (empty order)</div>';
+  const timeline = (o.history || []).map((h, i) => {
+    const last = i === o.history.length - 1;
+    const v = CAT_VAR[(STATUS_INFO[h.status] || {}).cat || 'neutral'];
+    return `<div class="tl-entry done ${last ? 'latest' : ''}" style="--c:var(${v})"><div class="tl-dot"></div>`
+      + `<div class="tl-status">${esc(h.status)}</div><div class="tl-time">${fmtDateTime(h.ts)}</div>`
+      + `<div class="tl-note">${esc((STATUS_INFO[h.status] || {}).desc || '')}</div></div>`;
+  }).join('');
+  byId('drawerBody').innerHTML = `
+    <div class="card mb"><div class="card-body">${kv}</div></div>
+    <div class="card mb"><div class="card-head"><h3>Items</h3><span class="ch-sub">${(o.items || []).length}</span></div><div class="card-body">${items}</div></div>
+    <div class="card"><div class="card-head"><h3>Status History</h3></div><div class="card-body"><div class="timeline">${timeline}</div></div></div>`;
+  const term = TERMINAL.has(o.status);
+  // OMS-019: corrections are only accepted by the workflow when it is in
+  // PENDING_CORRECTION — the validator rejects them in every other phase.
+  // Disable the button everywhere else to prevent a confusing 400 response.
+  const canCorrect = o.status === 'PENDING_CORRECTION';
+  byId('drawerFoot').innerHTML = `
+    <button class="btn btn-primary btn-sm" data-d="pay" ${term ? 'disabled' : ''}><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg> Pay</button>
+    <button class="btn btn-warn btn-sm" data-d="correct" ${canCorrect ? '' : 'disabled'}><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg> Correct</button>
+    <button class="btn btn-danger btn-sm" data-d="cancel" ${term ? 'disabled' : ''}><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m4.9 4.9 14.2 14.2"/></svg> Cancel</button>
+    <button class="btn btn-ghost btn-sm" data-d="refresh"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg> Refresh</button>
+    <div class="grow" style="flex:1"></div>
+    <button class="btn btn-ghost btn-sm" data-d="delete"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> Remove</button>`;
+  $$('#drawerFoot [data-d]').forEach(b => b.onclick = () => {
+    const a = b.dataset.d;
+    if (a === 'pay') openPaymentModal(orderId);
+    else if (a === 'correct') openCorrectModal(orderId);
+    else if (a === 'cancel') confirmCancel(orderId);
+    else if (a === 'refresh') refreshOne(orderId);
+    else if (a === 'delete') { if (confirm('Remove ' + orderId + ' from this console?')) removeOrder(orderId); }
+  });
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   23. MODAL (generic) + payment / correct / import
+   ════════════════════════════════════════════════════════════════════════ */
+function openModal(title, html, onMount) {
+  byId('modalTitle').textContent = title;
+  byId('modalBody').innerHTML = html;
+  byId('modal').classList.add('show');
+  if (onMount) onMount();
+}
+function closeModal() { byId('modal').classList.remove('show'); }
+function openPaymentModal(orderId) {
+  openModal('Capture Payment — ' + orderId, `
+    <div class="field"><label>RRN</label><input class="input" id="mRrn" value="RRN-${Date.now()}">
+      <div class="toggle-row"><input type="checkbox" id="mBad"><label for="mBad" style="color:var(--red)">Invalid RRN (rejected by processor)</label></div></div>
+    <div class="field"><label>Amount (cents)</label><input class="input" type="number" id="mAmt" value="5000"></div>
+    <div class="btn-row"><button class="btn btn-primary" id="mGo">Capture Payment</button></div>`, () => {
+    byId('mBad').onchange = e => byId('mRrn').value = e.target.checked ? 'INVALID-RRN-NOTFOUND' : 'RRN-' + Date.now();
+    byId('mGo').onclick = async () => {
+      try { await actionPayment({ orderId, customerId: (state.orders[orderId] || {}).customerId || 'CUST-001', rrn: byId('mRrn').value.trim(), amountCents: parseInt(byId('mAmt').value) || 5000 }); closeModal(); }
+      catch (e) { toast(e.message, 'error'); }
+    };
+  });
+}
+function openCorrectModal(orderId) {
+  const cur = (state.orders[orderId] || {}).items || DEFAULT_ITEMS;
+  openModal('Correct Order — ' + orderId, `
+    <div class="field"><label>Corrected Items (JSON)</label><textarea class="input mono" id="mItems" style="min-height:120px">${esc(JSON.stringify(cur, null, 2))}</textarea></div>
+    <div class="btn-row"><button class="btn btn-warn" id="mGo">Submit Correction</button></div>`, () => {
+    byId('mGo').onclick = async () => {
+      let items; try { items = JSON.parse(byId('mItems').value); } catch { return toast('Invalid JSON', 'error'); }
+      try { await actionCorrect({ orderId, customerId: (state.orders[orderId] || {}).customerId || 'CUST-001', items }); closeModal(); }
+      catch (e) { toast(e.message, 'error'); }
+    };
+  });
+}
+function openImportModal() {
+  openModal('Import Data', `
+    <div class="field"><label>Paste a previously exported JSON</label><textarea class="input mono" id="mImport" style="min-height:160px" placeholder='{"orders":{},"events":[],"settings":{}}'></textarea></div>
+    <div class="btn-row"><button class="btn btn-primary" id="mGo"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg> Import</button></div>`, () => {
+    byId('mGo').onclick = () => {
+      try {
+        const data = JSON.parse(byId('mImport').value);
+        if (data.orders) state.orders = data.orders;
+        if (Array.isArray(data.events)) state.events = data.events;
+        if (data.settings) state.settings = { ...DEFAULT_SETTINGS, ...data.settings };
+        applySettings(); saveState(); closeModal(); showView(state.currentView); toast('Import complete', 'success');
+      } catch (e) { toast('Import failed: ' + e.message, 'error'); }
+    };
+  });
+}
+function confirmCancel(orderId) {
+  if (confirm('Cancel order ' + orderId + '? This is ignored if payment was already captured.')) {
+    actionCancel({ orderId }).catch(e => toast(e.message, 'error'));
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   25. THEME + SETTINGS APPLICATION
+   ════════════════════════════════════════════════════════════════════════ */
+function applySettings() {
+  const s = state.settings, root = document.documentElement;
+  root.setAttribute('data-theme', s.theme);
+  root.setAttribute('data-accent', s.accent);
+  root.setAttribute('data-density', s.density);
+  root.setAttribute('data-motion', s.motion);
+  byId('app').classList.toggle('nav-collapsed', !!s.navCollapsed);
+  byId('themeIcon').innerHTML = s.theme === 'light' ? '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>' : '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>';
+  byId('sbApi').textContent = s.apiBase;
+  schedulePoll();
+}
+function toggleTheme() {
+  state.settings.theme = state.settings.theme === 'light' ? 'dark' : 'light';
+  applySettings(); saveState();
+  if (state.currentView === 'settings') renderSettings();
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   26. HELP MODAL
+   ════════════════════════════════════════════════════════════════════════ */
+function openHelp() {
+  const rows = [
+    ['/', 'Focus search'], ['?', 'This help'],
+    ['1 – 4', 'Switch view'], ['Esc', 'Close overlay'], ['T', 'Toggle theme'],
+  ].map(([k, d]) => `<div class="kv"><span class="k" style="text-transform:none"><span class="kbd">${esc(k)}</span></span><span class="v" style="font-family:var(--font)">${esc(d)}</span></div>`).join('');
+  openModal('Keyboard Shortcuts', `<div class="card"><div class="card-body">${rows}</div></div>`);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   27. EVENTS WIRING + KEYBOARD
+   ════════════════════════════════════════════════════════════════════════ */
+function wireChrome() {
+  $$('.nav-item[data-view]').forEach(n => n.onclick = () => showView(n.dataset.view));
+  byId('themeToggle').onclick = toggleTheme;
+  byId('helpBtn').onclick = openHelp;
+  byId('navToggle').onclick = () => byId('app').classList.toggle('nav-open');
+  byId('drawerClose').onclick = closeDrawer;
+  byId('scrim').onclick = closeDrawer;
+  byId('modalClose').onclick = closeModal;
+  byId('modal').onclick = e => { if (e.target.id === 'modal') closeModal(); };
+
+  const gs = byId('globalSearch');
+  gs.oninput = debounce(() => {
+    state.ordersQuery = gs.value;
+    if (state.currentView !== 'orders') showView('orders'); else renderOrders();
+  }, 200);
+
+  document.addEventListener('keydown', e => {
+    const inField = /^(INPUT|TEXTAREA|SELECT)$/.test((e.target.tagName || '')) || e.target.isContentEditable;
+    if (e.key === 'Escape') { closeModal(); if (byId('drawer').classList.contains('show')) closeDrawer(); return; }
+    if (inField) return;
+    if (e.key === '/') { e.preventDefault(); byId('globalSearch').focus(); }
+    else if (e.key === '?') { e.preventDefault(); openHelp(); }
+    else if (e.key.toLowerCase() === 't') { toggleTheme(); }
+    else if (/^[1-4]$/.test(e.key)) { showView(Object.keys(VIEW_META)[parseInt(e.key) - 1]); }
+  });
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   28. INIT
+   ════════════════════════════════════════════════════════════════════════ */
+function init() {
+  loadState();
+  applySettings();
+  wireChrome();
+  // Resume polling for any persisted, non-terminal orders.
+  for (const o of orderList()) { if (!TERMINAL.has(o.status)) o.polling = true; }
+  showView('overview');
+  setConnection('checking');
+  pingConnection();
+  setInterval(pingConnection, 5000);
+  schedulePoll();
+}
+init();
+</script>
+</body>
+</html>

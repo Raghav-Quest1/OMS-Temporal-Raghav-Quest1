@@ -1,0 +1,82 @@
+services:
+
+  # ── Infrastructure ────────────────────────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:13
+    container_name: temporal-postgres
+    networks:
+      - host
+    environment:
+      POSTGRES_USER: temporal
+      POSTGRES_PASSWORD: temporal
+      POSTGRES_DB: temporal
+    ports: ["5432:5432"]
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  temporal:
+    image: temporalio/auto-setup:1.29.5
+    container_name: temporal-server
+    networks:
+      - host
+    depends_on: [postgres]
+    environment:
+      DB: postgres12
+      DB_PORT: 5432
+      POSTGRES_USER: temporal
+      POSTGRES_PWD: temporal
+      POSTGRES_SEEDS: postgres
+    ports: ["7233:7233"]
+
+  temporal-ui:
+    image: temporalio/ui:2.49.1
+    container_name: temporal-ui
+    networks:
+      - host
+    depends_on: [temporal]
+    environment:
+      TEMPORAL_ADDRESS: temporal:7233
+    ports: ["8080:8080"]
+
+  # ── Application ───────────────────────────────────────────────────────────────────────────────
+  oms-api:
+    build: ./python-backend
+    container_name: oms-api
+    networks:
+      - host
+    depends_on: [temporal]
+    # Temporal's auto-setup takes ~20-30s to accept connections; depends_on only
+    # waits for the container to start, not for the server to be ready. Restart
+    # on failure so the API self-heals until Temporal is reachable.
+    restart: on-failure
+    environment:
+      TEMPORAL_HOST: temporal:7233
+      PYTHONUNBUFFERED: "1"
+    command: ["python", "-m", "oms.api"]
+    ports: ["3000:3000"]
+
+  oms-worker:
+    build: ./python-backend
+    container_name: oms-worker
+    networks:
+      - host
+    depends_on: [temporal]
+    restart: on-failure
+    environment:
+      TEMPORAL_HOST: temporal:7233
+      PYTHONUNBUFFERED: "1"
+    command: ["python", "-m", "oms.worker"]
+
+  oms-ui:
+    build: ./web-ui
+    container_name: oms-ui
+    networks:
+      - host
+    ports: ["80:80"]
+
+volumes:
+  postgres_data:
+
+networks:
+  host:
+    driver: bridge
