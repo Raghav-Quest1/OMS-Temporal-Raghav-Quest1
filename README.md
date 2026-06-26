@@ -7,7 +7,6 @@ Durable order lifecycle orchestration: Commerce API validation, support-correcti
 ## Quick start
 
 ```bash
-cd OrderProcessingApplication-POC
 docker compose up --build
 ```
 
@@ -32,7 +31,7 @@ Temporal takes ~20–30s to boot on first run; the API and worker self-heal via 
                               ┌───────────────────────┴──────────────────────┐
                         OMS_QUEUE worker                           COMMERCE_QUEUE worker
                         workflow + all activities                  validate_order_api only
-                                                                   (150 RPS cap)
+                        except validate_order_api                  (150 RPS cap)
 ```
 
 ---
@@ -73,7 +72,7 @@ Every transition writes to `update_customer_dashboard`. External Temporal cancel
 | `workflow.patched("risk-assessment-v1")` | Safe in-place versioning for the vNext risk gate |
 | `workflow_id = order.order_id` + `USE_EXISTING` | Exactly-once workflow per order; duplicate webhooks are idempotent |
 | Dual task queues | Commerce API rate-limited to 150 RPS without throttling PIM/Kafka/dashboard |
-| `RetryPolicy` + `schedule_to_close_timeout` | Exponential backoff bounded by a 2-minute total budget per activity |
+| `RetryPolicy` + `schedule_to_close_timeout` | Exponential backoff bounded by a 5-minute total budget per activity |
 | `asyncio.CancelledError` + `asyncio.shield` | Temporal cancellation handler writes terminal status and drains handlers |
 | `WorkerDeploymentConfig(PINNED)` | Each execution stays on the Worker version it started; safe rolling deploys |
 
@@ -103,7 +102,7 @@ Every transition writes to `update_customer_dashboard`. External Temporal cancel
 
 | Method | Path | Action |
 |---|---|---|
-| `POST` | `/api/orders` | Start workflow; `order.order_id` becomes the workflow ID (UUID fallback) |
+| `POST` | `/api/orders` | Start workflow; `order.order_id` becomes the workflow ID (required — missing ID returns 400) |
 | `POST` | `/api/orders/correct?orderId=X` | Send `handle_correction` Update |
 | `POST` | `/api/payments` | Send `capture_payment` Update; `metadata.order_id` routes to the right workflow |
 | `POST` | `/api/orders/cancel?orderId=X` | Send `cancel_order` Signal |
@@ -116,15 +115,31 @@ Every transition writes to `update_customer_dashboard`. External Temporal cancel
 ```bash
 cd python-backend
 pip install -r requirements-dev.txt
-pytest          # → 26 passed
+pytest          # → 38 passed
 ```
 
-26 tests across two files: 19 workflow/activity scenarios (time-skipping `WorkflowEnvironment`, recording activities double) and 7 API webhook tests (in-process fake Temporal client).
+38 tests across three files: 25 workflow/activity scenarios (time-skipping `WorkflowEnvironment`, recording activities double), 8 API webhook tests (in-process fake Temporal client), and 5 replay tests (saved event histories replayed against current workflow code).
 
 | File | Count | Covers |
 |---|---|---|
-| `test_order_processing.py` | 19 | Happy path, TTL, cancellation, corrections, RRN retry, risk gate, Kafka contract, PAYMENT_EXPIRED, FULFILLMENT_FAILED, CORRECTION_TIMEOUT |
-| `test_api.py` | 7 | Webhook parsing, idempotent start, Update routing, validator rejections, status query |
+| `test_order_processing.py` | 25 | Happy path, TTL, cancellation, corrections, RRN retry, risk gate, Kafka contract, PAYMENT_EXPIRED, FULFILLMENT_FAILED, CORRECTION_TIMEOUT, phase guards, duplicate payment, status query, external Temporal cancellation |
+| `test_api.py` | 8 | Webhook parsing, idempotent start, Update routing, validator rejections, 409 on duplicate order ID, status query |
+| `test_replay.py` | 5 | Replay safety for happy path, risk rejected, correction timeout, payment expired, fulfillment failed |
+
+---
+
+## Replay fixtures
+
+`test_replay.py` loads pre-recorded event histories from `tests/fixtures/*.json` and replays them against the current workflow code to catch non-determinism errors before they reach production.
+
+The five fixture files (`happy_path`, `risk_rejected`, `correction_timeout`, `payment_expired`, `fulfillment_failed`) are committed to the repo. Regenerate them after any non-additive workflow code change:
+
+```bash
+cd python-backend
+python tests/fixtures/generate_replay_fixtures.py
+```
+
+Then commit the updated JSON files alongside the code change.
 
 ---
 
