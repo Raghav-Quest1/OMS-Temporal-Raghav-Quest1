@@ -97,15 +97,20 @@ async def main() -> None:
     )
 
     # COMMERCE_QUEUE: validate_order_api only, hard-capped at 150 RPS.
-    # max_concurrent_activities is set conservatively so that 100 simultaneous
-    # slots cannot produce a burst that saturates the per-second rate limiter
-    # before it catches up.  At p99 ~100 ms per call, 15 concurrent slots yields
-    # ~150 completions/s in steady state — matching the rate cap exactly.
-    # Raise this value only if p99 latency rises significantly (>200 ms).
+    #
+    # Two separate rate-limit parameters work together:
+    #   max_task_queue_activities_per_second=150.0  — server-side cap enforced by
+    #     Temporal on the queue itself, across ALL worker replicas. This is the
+    #     true global guard: 2 replicas → still 150 RPS total, not 300.
+    #   max_activities_per_second=150.0  — per-worker local guard kept as
+    #     defence-in-depth in case the server-side cap is ever misconfigured.
+    #   max_concurrent_activities=15  — at p99 ~100 ms per call, 15 slots yields
+    #     ~150 completions/s in steady state. Raise only if p99 exceeds 200 ms.
     commerce_worker = Worker(
         client,
         task_queue=COMMERCE_QUEUE,
         activities=[activities.validate_order_api],
+        max_task_queue_activities_per_second=150.0,
         max_activities_per_second=150.0,
         max_concurrent_activities=15,
         deployment_config=_deployment_config("oms-commerce"),

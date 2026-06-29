@@ -50,7 +50,7 @@ with workflow.unsafe.imports_passed_through():
         PaymentValidationInput,
         WorkflowState,
     )
-    from oms.constants import COMMERCE_QUEUE
+    from oms.constants import COMMERCE_QUEUE, ORDER_STATUS_ATTR
 
 # ── Retry policy shared across all activity calls ────────────────────────────
 # - No maximum_attempts: per Temporal guidance, use schedule_to_close_timeout
@@ -168,19 +168,11 @@ class OrderProcessingWorkflow:
     # ── Internal helpers ────────────────────────────────────────────────────────
 
     async def _update_status(self, status: OrderStatus) -> None:
-        # DESIGN NOTE (OMS-005): current_status is written in-memory BEFORE the
-        # dashboard activity starts.  This is intentional: update validators for
-        # capture_payment and handle_correction read _state.current_status to
-        # enforce phase guards.  If the status were set only after the activity
-        # completed, a second Update arriving during the activity call window
-        # would still see the old status and could be incorrectly accepted.
-        #
-        # Trade-off: if a Temporal cancel arrives while this activity is
-        # executing, _state.current_status is already advanced to the new value
-        # but the dashboard was never written.  In the worst case (cancel during
-        # _update_status(FULFILLED)), the dashboard permanently shows the prior
-        # status (ENRICHING).  This is a known, accepted limitation; see OMS-005.
         self._state.current_status = status
+        # Upsert a Search Attribute so operators can filter open workflows by
+        # business status in the Temporal UI and via ListWorkflowExecutions.
+        # upsert_search_attributes is synchronous — no await, no history yield.
+        workflow.upsert_search_attributes({ORDER_STATUS_ATTR: [str(status)]})
         await workflow.execute_activity_method(
             OmsActivities.update_customer_dashboard,
             DashboardUpdate(

@@ -12,3 +12,7 @@ OMS_QUEUE = "OMS_QUEUE"
 # Dedicated queue for validate_order_api only, capped at 150 RPS.
 # Do NOT add other activities here — it throttles them to 150 RPS as well.
 COMMERCE_QUEUE = "COMMERCE_QUEUE"
+
+# Temporal Search Attribute name for filtering open workflows by business status.
+# Must be registered in the namespace before use — see temporal-init in docker-compose.yml.
+ORDER_STATUS_ATTR = "OrderStatus"
